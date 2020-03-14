@@ -12,3 +12,6 @@ Mondaca Medina Sofia Carolina
 Cortez Flores Adrián Alejandro
 
 Edgar Eduardo Regalado Lopez
+
+
+esta linea es nueva en el repositorio, yo no la tengo en mi copia del pc
