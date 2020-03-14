@@ -6,3 +6,5 @@ Simulación de crecimiento urbano para NetLogo
 Armenta Peña Jose Francisco
 
 Mondaca Medina Sofia Carolina
+
+Cortez Flores Adrián Alejandro
