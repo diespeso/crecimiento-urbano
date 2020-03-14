@@ -10,3 +10,8 @@ Mondaca Medina Sofia Carolina
 Cortez Flores Adrián Alejandro
 
 Edgar Eduardo Regalado Lopez
+
+
+
+
+esta linea está en la misma linea (17), entonces habŕa un conflicto
