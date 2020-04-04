@@ -5,7 +5,8 @@ globals [
   terreno-dataset
   calle-dataset
   exclusion-dataset
-
+  perimetro-dataset
+  urban-dataset
   poblacion_total
 ]
 
@@ -25,12 +26,25 @@ to setup
 
   gis:load-coordinate-system (word mapa ".prj")
   set terreno-dataset gis:load-dataset "020040001A.shp"
+  set urban-dataset gis:load-dataset "Urban/Urban-polygon.shp"
+  set perimetro-dataset gis:load-dataset "Urban/polylines3.shp"
   set calle-dataset gis:load-dataset "Calles.shp"
   set exclusion-dataset gis:load-dataset "Exclusion_lambert.shp"
   gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of terreno-dataset)
                                                 (gis:envelope-of calle-dataset)
-                                                (gis:envelope-of exclusion-dataset))
+                                                (gis:envelope-of exclusion-dataset)
+                                                (gis:envelope-of urban-dataset)
+                                                (gis:envelope-of perimetro-dataset))
   reset-ticks
+end
+
+to desplegar-urban
+  gis:set-drawing-color white
+  gis:draw perimetro-dataset 1
+
+  gis:set-drawing-color blue
+  gis:draw urban-dataset 1
+  gis:fill urban-dataset 1
 end
 
 to setup-testeo
@@ -334,10 +348,10 @@ NIL
 1
 
 BUTTON
-16
-265
-148
-298
+19
+245
+151
+278
 NIL
 desplegar_exclusion
 NIL
@@ -522,6 +536,23 @@ count patches with [pcolor = green]
 17
 1
 11
+
+BUTTON
+18
+290
+151
+323
+Desplegar Urban
+desplegar-urban
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
