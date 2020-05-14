@@ -26,7 +26,7 @@ to setup
   setup-testeo
 
   setup-patches
-  ;setup-turtles
+  setup-turtles
   ;;
 
   gis:load-coordinate-system (word mapa ".prj")
@@ -116,9 +116,10 @@ to setup-patches
 end
 
 to setup-turtles
-  ;create-turtles 10
+  create-turtles 100
   ;ask turtles [set poblacion_celula 1000] ;inicializa la población a 1000.
-  ;ask turtles[set shape "person" setxy random-xcor random-ycor]
+  ask turtles[set shape "person" setxy random-xcor random-ycor]
+  ask turtles[set color red]
   ;ask turtles [set poblacion_total poblacion_total + poblacion_celula] ;aumenta el contador global con la población de cada célula.
 end
 
@@ -253,9 +254,18 @@ to desplegar_exclusion
   ]
 end
 
+to verificar-exclusion
+  ask turtles [
+    if pcolor = cyan [die]
+    if pcolor = brown [die]
+  ]
+end
+
 to go
   move-testeo
   cambio
+
+  verificar-exclusion
 
   system-dynamics-go
   tick
