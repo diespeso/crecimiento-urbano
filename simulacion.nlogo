@@ -16,6 +16,8 @@ breed [testeo test]
 breed [excls excl]
 breed [calles calle]
 
+breed [urbanas tortuga-urbana]
+breed [rurales tortuga-rural]
 
 
 
@@ -26,7 +28,6 @@ to setup
   setup-testeo
 
   setup-patches
-  setup-turtles
   ;;
 
   gis:load-coordinate-system (word mapa ".prj")
@@ -42,7 +43,9 @@ to setup
                                                 (gis:envelope-of perimetro-dataset))
   reset-ticks
   desplegar-urban-patches
+  desplegar-exclusion
   desplegar-exclusion-urban
+  setup-turtles
 end
 
 to desplegar-urban-patches
@@ -90,6 +93,40 @@ to desplegar-exclusion-urban
   set pcolor brown ]
 end
 
+to desplegar-exclusion
+  ;exclusión de los límites de la ciudad
+  ask patches with [pxcor >= -205 and pxcor <= -150 and pycor >= 1 and pycor <= 40] [
+  set pcolor brown ]
+  ask patches with [pxcor >= -150 and pxcor <= -140 and pycor >= -30 and pycor <= 1] [
+  set pcolor cyan ]
+  ask patches with [pxcor >= -150 and pxcor <= -140 and pycor >= 1 and pycor <= 40] [
+  set pcolor brown ]
+  ask patches with [pxcor >= -150 and pxcor <= -90 and pycor >= -100 and pycor <= 45] [
+  set pcolor brown ]
+  ask patches with [pxcor >= -100 and pxcor <= 10 and pycor >= -300 and pycor <= -50] [
+  set pcolor brown ]
+  ask patches with [pxcor >= -100 and pxcor <= 300 and pycor >= -300 and pycor <= -170] [
+  set pcolor brown ]
+  ask patches with [pxcor >= 200 and pxcor <= 300 and pycor >= -300 and pycor <= 500] [
+  set pcolor brown ]
+  ask patches with [pxcor >= -205 and pxcor <= 300 and pycor >= 167 and pycor <= 400] [
+  set pcolor brown ];EUA
+  ask patches with [pxcor >= 100 and pxcor <= 290 and pycor >= -30 and pycor <= 100] [
+  set pcolor brown ]
+  ask patches with [pxcor >= 115 and pxcor <= 290 and pycor >= -30 and pycor <= 300] [
+  set pcolor brown ]
+  ask patches with [pxcor >= 140 and pxcor <= 290 and pycor >= -130 and pycor <= -80] [
+  set pcolor brown ]
+
+  ;exclusion del mar
+  ask patches with [pxcor >= -260 and pxcor <= -205 and pycor >= -300 and pycor <= 300] [
+  set pcolor cyan ]
+  ask patches with [pxcor >= -260 and pxcor <= -150 and pycor >= -300 and pycor <= 0] [
+  set pcolor cyan ]
+  ask patches with [pxcor >= -260 and pxcor <= -100 and pycor >= -300 and pycor <= -100] [
+  set pcolor cyan ]
+end
+
 to setup-testeo
   ;create-testeo 5000
   ask testeo [setxy random-xcor random-ycor]
@@ -116,9 +153,19 @@ to setup-patches
 end
 
 to setup-turtles
-  create-turtles 100
+  create-urbanas 95
+  create-rurales 5
+
   ;ask turtles [set poblacion_celula 1000] ;inicializa la población a 1000.
-  ask turtles[set shape "person" setxy random-xcor random-ycor]
+  ;ask turtles[set shape "person" setxy random-xcor random-ycor]
+  let urban-patches patches with [pcolor = blue]
+  let rural-patches patches with [pcolor = green]
+
+  ask turtles[set shape "person"]
+  ;ask turtles [move-to one-of urban-patches]
+  ask urbanas [move-to one-of urban-patches]
+  ask rurales [move-to one-of rural-patches]
+
   ask turtles[set color red]
   ;ask turtles [set poblacion_total poblacion_total + poblacion_celula] ;aumenta el contador global con la población de cada célula.
 end
@@ -147,68 +194,6 @@ to desplegar
       ]
     ]
   ]
-
-    ask patches with [pxcor >= -260 and pxcor <= -205 and pycor >= -300 and pycor <= 300] [
-  set pcolor cyan ]
-  ask patches with [pxcor >= -260 and pxcor <= -150 and pycor >= -300 and pycor <= 0] [
-  set pcolor cyan ]
-  ask patches with [pxcor >= -260 and pxcor <= -100 and pycor >= -300 and pycor <= -100] [
-  set pcolor cyan ]
-  ask patches with [pxcor >= -205 and pxcor <= -150 and pycor >= 1 and pycor <= 40] [
-  set pcolor brown ]
-  ask patches with [pxcor >= -150 and pxcor <= -140 and pycor >= -30 and pycor <= 1] [
-  set pcolor cyan ]
-  ask patches with [pxcor >= -150 and pxcor <= -140 and pycor >= 1 and pycor <= 40] [
-  set pcolor brown ]
-  ask patches with [pxcor >= -150 and pxcor <= -90 and pycor >= -100 and pycor <= 45] [
-  set pcolor brown ]
-  ask patches with [pxcor >= -100 and pxcor <= 10 and pycor >= -300 and pycor <= -50] [
-  set pcolor brown ]
-  ask patches with [pxcor >= -100 and pxcor <= 300 and pycor >= -300 and pycor <= -170] [
-  set pcolor brown ]
-  ask patches with [pxcor >= 200 and pxcor <= 300 and pycor >= -300 and pycor <= 500] [
-  set pcolor brown ]
-  ask patches with [pxcor >= -205 and pxcor <= 300 and pycor >= 167 and pycor <= 400] [
-  set pcolor brown ];EUA
-  ask patches with [pxcor >= 100 and pxcor <= 290 and pycor >= -30 and pycor <= 100] [
-  set pcolor brown ]
-  ask patches with [pxcor >= 115 and pxcor <= 290 and pycor >= -30 and pycor <= 300] [
-  set pcolor brown ]
-  ask patches with [pxcor >= 140 and pxcor <= 290 and pycor >= -130 and pycor <= -80] [
-  set pcolor brown ]
-
-  ;ask patches with [pxcor >= 00 and pxcor <= 10 and pycor >= 50 and pycor <= 55] [
-  ;set pcolor red ]
-
-
-
-  ;ask patches with [pxcor >= -150 and pxcor <= -140 and pycor >= 94 and pycor <= 95] [
-  ;set pcolor red ]
-  ;ask patches with [pxcor >= -155 and pxcor <= -154 and pycor >= 94 and pycor <= 95] [
-  ;set pcolor red ]
-    ;ask patches with [pxcor >= -155 and pxcor <= -154 and pycor >= 94 and pycor <= 95] [
-  ;set pcolor red ]
-
-  ;ask patches with [pxcor >= -195 and pxcor <= 112 and pycor >= 120 and pycor <= 124] [
-  ;set pcolor red ]
-  ;ask patches with [pxcor >= -200 and pxcor <= -196 and pycor >= 2 and pycor <= 165][
-  ;set pcolor red ]
-  ;ask patches with [pxcor >= 20 and pxcor <= 24 and pycor >= 2 and pycor <= 120][
-  ;set pcolor red ]
-  ;  ask patches with [pxcor >= -89 and pxcor <= 23 and pycor >= 2 and pycor <= 6] [
-  ;set pcolor red ]
-  ;   ask patches with [pxcor >= -175 and pxcor <= -170 and pycor >= 40 and pycor <= 70] [
-  ;set pcolor red ]
-   ;   ask patches with [pxcor >= -175 and pxcor <= -135 and pycor >= 67 and pycor <= 70] [
-  ;set pcolor red ]
-   ;     ask patches with [pxcor >= -140 and pxcor <= -135 and pycor >= 68 and pycor <= 95] [
-  ;set pcolor red ]
-   ;      ask patches with [pxcor >= -140 and pxcor <= -115 and pycor >= 90 and pycor <= 95] [
-  ;set pcolor red ]
-  ;       ask patches with [pxcor >= -119 and pxcor <= -115 and pycor >= 95 and pycor <= 155] [
-  ;set pcolor red ]
-
-
 end
 
 to desplegar_calle
@@ -268,8 +253,19 @@ to go
   verificar-exclusion
 
   system-dynamics-go
+
+  propagar-rurales
   tick
   wait .1
+end
+
+to propagar-rurales
+  ;dummy
+  ask rurales [
+  let ran random 100
+    ifelse ran >= 90 [hatch-rurales 1 [jump 3]] []
+  ]
+
 end
 
 ;; funciones para obtención de tasas relacionadas al crecimiento.
