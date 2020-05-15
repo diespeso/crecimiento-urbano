@@ -50,38 +50,67 @@ to setup
                                                 (gis:envelope-of elevada-dataset)
                                                 (gis:envelope-of muyElevada-dataset));;Ejemplo de uso dataset
   reset-ticks
-end
-
-to desplegar_ligera
-
-  gis:set-drawing-color cyan
-  gis:draw ligera-dataset 1
-  gis:fill ligera-dataset 1
 
 end
 
-to desplegar_estandar
+;; Altitud negativa (canales) ;;
+to desplegar_altNegP
 
-  gis:set-drawing-color 75
-  gis:draw estandar-dataset 1
-  gis:fill estandar-dataset 1
+  ask patches with [pxcor >= -143 and pxcor < -125 and pycor > 156 and pycor < 165] [set pcolor magenta ]
+  ask patches with [pxcor >= -134 and pxcor < -110 and pycor > 149 and pycor < 157] [set pcolor magenta ]
+  ask patches with [pxcor >= -124 and pxcor < -104 and pycor > 140 and pycor < 150] [set pcolor magenta ]
+  ask patches with [pxcor >= -112 and pxcor < -90 and pycor > 130 and pycor < 142] [set pcolor magenta ]
+  ask patches with [pxcor >= -82 and pxcor < -69 and pycor > 110 and pycor < 121] [set pcolor magenta ]
+  ask patches with [pxcor >= -74 and pxcor < -62 and pycor > 90 and pycor < 112] [set pcolor magenta ]
+  ask patches with [pxcor >= -63 and pxcor < -45 and pycor > 77 and pycor < 97] [set pcolor magenta ]
+  ask patches with [pxcor >= -96 and pxcor < -68 and pycor > 120 and pycor < 135] [set pcolor magenta ]
+  ask patches with [pxcor >= -69 and pxcor < -55 and pycor > 124 and pycor < 135] [set pcolor magenta ]
+  ask patches with [pxcor >= -96 and pxcor < -82 and pycor > 112 and pycor < 121] [set pcolor magenta ]
+  ask patches with [pxcor >= -57 and pxcor < -44 and pycor > 133 and pycor < 140] [set pcolor magenta ]
+  ask patches with [pxcor >= -45 and pxcor < -30 and pycor > 138 and pycor < 147] [set pcolor magenta ]
+   ask patches with [pxcor >= -62 and pxcor < -50 and pycor > 96 and pycor < 110] [set pcolor magenta ]
+
+
 
 end
 
-to desplegar_elevada
+;;Altitud de 251 m a 400 m ;;
+to desplegar_Elevadap
 
-  gis:set-drawing-color 64
-  gis:draw elevada-dataset 1
-  gis:fill elevada-dataset 1
+  ask patches with [pxcor >= -138 and pxcor < -112 and pycor > 62 and pycor < 106] [set pcolor [241 217 57] ]
+  ask patches with [pxcor >= -46 and pxcor < -30 and pycor > 87 and pycor < 112] [set pcolor [241 217 57] ]
+  ask patches with [pxcor >= -51 and pxcor < -46 and pycor > 93 and pycor < 107] [set pcolor [241 217 57] ]
+  ask patches with [pxcor >= -112 and pxcor < -92 and pycor > 61 and pycor < 102] [set pcolor [241 217 57] ]
 
 end
 
-to desplegar_muyElevada
+;; 161 metros hasta 250 metros ;;
+to desplegar_estandarp
 
-  gis:set-drawing-color 14
-  gis:draw muyElevada-dataset 1
-  gis:fill muyElevada-dataset 1
+  ;;color [29 159 120]
+  ask patches with [pxcor >= -183 and pxcor < -152 and pycor > 110 and pycor < 153] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -152 and pxcor < -114 and pycor > 105 and pycor < 127] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -152 and pxcor < -130 and pycor > 125 and pycor < 140] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -114 and pxcor < -102 and pycor > 105 and pycor < 122] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -111 and pxcor < -98 and pycor > 100 and pycor < 118] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -103 and pxcor < -87 and pycor > 94 and pycor < 109] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -92 and pxcor < -77 and pycor > 60 and pycor < 97] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -79 and pxcor < -67 and pycor > 60 and pycor < 85] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -158 and pxcor < -138 and pycor > 100 and pycor < 112] [set pcolor [29 159 120] ]
 
+  ask patches with [pxcor >= -30 and pxcor < 15 and pycor > 91 and pycor < 118] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -25 and pxcor < 7 and pycor > 117 and pycor < 126] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= -30 and pxcor < -1 and pycor > 84 and pycor < 92] [set pcolor [29 159 120] ]
+  ask patches with [pxcor >= 15 and pxcor < 42 and pycor > 94 and pycor < 110] [set pcolor [29 159 120] ]
+
+end
+
+;; Altitud de 401 metros hacia arriba;;
+to desplegar_muyElevadap
+
+
+  ask patches with [pxcor >= -40 and pxcor < -32 and pycor > 103 and pycor < 110] [set pcolor red ]
+  ask patches with [pxcor >= -45 and pxcor < -34 and pycor > 91 and pycor < 104] [set pcolor red ]
 end
 
 to desplegar
@@ -650,7 +679,7 @@ BUTTON
 161
 364
 Desplegar Altitud
-desplegar_ligera\ndesplegar_estandar\ndesplegar_elevada\ndesplegar_muyElevada
+desplegar_Elevadap\ndesplegar_MuyElevadap\ndesplegar_altNegp\ndesplegar_estandarp
 NIL
 1
 T
