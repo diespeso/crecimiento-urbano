@@ -59,6 +59,7 @@ to setup
   desplegar-exclusion-urban
   desplegar_altNegP
   desplegar_muyElevadap
+
   desplegar-land-use
   setup-turtles
 end
@@ -679,15 +680,15 @@ NIL
 HORIZONTAL
 
 SLIDER
-303
-139
-475
-172
+302
+137
+474
+170
 tasa-nacimientos
 tasa-nacimientos
 0.0
 100
-99.0
+100.0
 1.0
 1
 NIL
@@ -1050,49 +1051,39 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 1.0
-    org.nlogo.sdm.gui.AggregateDrawing 17
+    org.nlogo.sdm.gui.AggregateDrawing 13
         org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 428 134 60 40
-            org.nlogo.sdm.gui.WrappedStock "manchaUrbana" "manchaUrbana" 0
+            org.nlogo.sdm.gui.WrappedStock "poblacionTotal" "poblacionTotal" 0
         org.nlogo.sdm.gui.ReservoirFigure "attributes" "attributes" 1 "FillColor" "Color" 192 192 192 144 92 30 30
         org.nlogo.sdm.gui.RateConnection 3 174 109 295 128 416 147 NULL NULL 0 0 0
             org.jhotdraw.figures.ChopEllipseConnector REF 3
             org.jhotdraw.standard.ChopBoxConnector REF 1
-            org.nlogo.sdm.gui.WrappedRate "manchaUrbana + nacimientos - fallecimientos - migrantes + inmigrantes - fenomenosNaturales + poblacionTotal - restoVariable" "flujoUrbano"
+            org.nlogo.sdm.gui.WrappedRate "poblacionTotal + nacimientos - fallecimientos - migrantes + inmigrantes" "crecimientoPoblacional"
                 org.nlogo.sdm.gui.WrappedReservoir  REF 2 0
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 201 258 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-nacimientos" "nacimientos"
-        org.nlogo.sdm.gui.BindingConnection 2 233 265 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 368 19 50 50
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-nacimientos * poblacionInicial) / 1000" "nacimientos"
+        org.nlogo.sdm.gui.BindingConnection 2 379 55 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 9
             org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 50 212 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-fallecimientos" "fallecimientos"
-        org.nlogo.sdm.gui.BindingConnection 2 91 228 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 221 253 50 50
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-fallecimientos * poblacionInicial) / 1000" "fallecimientos"
+        org.nlogo.sdm.gui.BindingConnection 2 252 259 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 14
             org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 31 79 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-migrantes" "migrantes"
-        org.nlogo.sdm.gui.BindingConnection 2 78 106 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 364 260 50 50
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-migrantes * poblacionInicial) / 1000" "migrantes"
+        org.nlogo.sdm.gui.BindingConnection 2 379 269 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 19
             org.nlogo.sdm.gui.ChopRateConnector REF 4
         org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 173 10 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-inmigrantes" "inmigrantes"
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-inmigrantes * poblacionInicial) / 1000" "inmigrantes"
         org.nlogo.sdm.gui.BindingConnection 2 210 47 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 24
             org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 339 8 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-fenomenosNaturales" "fenomenosNaturales"
-        org.nlogo.sdm.gui.BindingConnection 2 353 47 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 44 125 50 50
+            org.nlogo.sdm.gui.WrappedConverter "1641570" "poblacionInicial"
+        org.nlogo.sdm.gui.BindingConnection 2 91 147 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 29
-            org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 345 264 50 50
-            org.nlogo.sdm.gui.WrappedConverter "1641570" "poblacionTotal"
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 491 244 50 50
-            org.nlogo.sdm.gui.WrappedConverter "5000" "restoVariable"
-        org.nlogo.sdm.gui.BindingConnection 2 500 259 295 128 NULL NULL 0 0 0
-            org.jhotdraw.contrib.ChopDiamondConnector REF 36
-            org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.BindingConnection 2 362 271 295 128 NULL NULL 0 0 0
-            org.jhotdraw.contrib.ChopDiamondConnector REF 34
             org.nlogo.sdm.gui.ChopRateConnector REF 4
 @#$#@#$#@
 @#$#@#$#@
