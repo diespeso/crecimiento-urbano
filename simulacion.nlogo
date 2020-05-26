@@ -1,103 +1,68 @@
 extensions [gis]
-turtles-own [poblacion_celula]
+turtles-own [energy]
 
 globals [
   terreno-dataset
   calle-dataset
   exclusion-dataset
-  perimetro-dataset
-  urban-dataset
-  poblacion-total
-  poblacion-celula
-  porcentaje-urbana
-  porcentaje-rural
-  anio-actual
-  delta-poblacion ; el cambio poblacional en el año actual
 ]
-
 breed [terrenos terreno]
 breed [testeo test]
-
-breed [excls excl]
 breed [calles calle]
-
-breed [urbanas tortuga-urbana]
-breed [rurales tortuga-rural]
-
-urbanas-own [poblacion]
-rurales-own [poblacion]
-
+breed [excls excl]
 
 to setup
   ca
   system-dynamics-setup
-
+  setup-testeo
+  ;;
   setup-patches
-
-  set poblacion-total 1600000
-  set poblacion-celula 1000
-  set porcentaje-urbana 96
-  set porcentaje-rural 4
-  set anio-actual 2015
-  set delta-poblacion 0
+  setup-turtles
   ;;
 
   gis:load-coordinate-system (word mapa ".prj")
   set terreno-dataset gis:load-dataset "020040001A.shp"
-  set urban-dataset gis:load-dataset "Urban/Urban-polygon.shp"
-  set perimetro-dataset gis:load-dataset "Urban/polylines3.shp"
   set calle-dataset gis:load-dataset "Calles.shp"
   set exclusion-dataset gis:load-dataset "Exclusion_lambert.shp"
   gis:set-world-envelope (gis:envelope-union-of (gis:envelope-of terreno-dataset)
                                                 (gis:envelope-of calle-dataset)
-                                                (gis:envelope-of exclusion-dataset)
-                                                (gis:envelope-of urban-dataset)
-                                                (gis:envelope-of perimetro-dataset))
+                                                (gis:envelope-of exclusion-dataset))
   reset-ticks
-  desplegar-urban-patches
-  desplegar-exclusion
-  desplegar-exclusion-urban
-  desplegar_altNegP
-  desplegar_muyElevadap
-  desplegar-land-use
-  setup-turtles
-end
-
-to desplegar-urban-patches
-  ask patches with [pxcor >= -203 and pycor >= 128
-   and pxcor <= 22 and pycor <= 165][ set pcolor blue]; rectangulo superior 1
-  ask patches with [pxcor >= -187 and pycor >= 104
-  and pxcor <= 22 and pycor <= 130][set pcolor blue]; rectangulo del medio 1
-  ask patches with [pxcor >= -128 and pycor >= 55
-  and pxcor <= 22 and pycor <= 110] [set pcolor blue] ; rectangulo inferior 1
-  ask patches with [pxcor >= -172 and pxcor <= -130
-  and pycor <= 101 and pycor >= 54] [set pcolor blue] ; cuadro izquierdo inferior
-  ask patches with [pxcor >= -83 and pxcor <= -62
-  and pycor <= 48 and pycor >= 5] [set pcolor blue] ; cuadro medio inferior
-  ask patches with [pxcor >= 22 and pxcor <= 49
-  and pycor <= 108 and pycor >= 74] [set pcolor blue]
 end
 
 
-to desplegar-exclusion-urban
-  ask patches with [pxcor >= -100 and pxcor <= -77 and pycor >= 157 and pycor <= 166] [;aeropuerto
-  set pcolor brown ]
-  ask patches with [pxcor >= -87 and pxcor <= -75 and pycor >= 155 and pycor <= 166] [
-  set pcolor brown ]
-  ;ask patches with [pxcor >= -74 and pxcor <= -65 and pycor >= 135 and pycor <= 146] [
- ; set pcolor brown ]
-  ;ask patches with [pxcor >= -45 and pxcor <= -40 and pycor >= 125 and pycor <= 136] [
-  ;set pcolor brown ]
-  ;ask patches with [pxcor >= -95 and pxcor <= -90 and pycor >= 130 and pycor <= 138] [
-  ;set pcolor brown ]
-  ask patches with [pxcor >= -35 and pxcor <= -30 and pycor >= 126 and pycor <= 131] [ ;plaza 2000
-  set pcolor brown ]
-  ask patches with [pxcor >= -120 and pxcor <= -115 and pycor >= 126 and pycor <= 131] [; estadio
-  set pcolor brown ]
-end
+to desplegar
+  ask terrenos [ die ]
+  ask patches with [pxcor >= -260 and pxcor <= -205 and pycor >= -300 and pycor <= 300] [
+  set pcolor cyan
+  ]
 
-to desplegar-exclusion
-  ;exclusión de los límites de la ciudad
+  ;create-turtles 50 [set shape "person" set size 10 set color yellow setxy -7 90]; create
+  gis:set-drawing-color white
+  gis:draw terreno-dataset 1
+  if label-terrenos
+  [ foreach gis:feature-list-of terreno-dataset [ [vector-feature] ->
+      let centroid gis:location-of gis:centroid-of vector-feature
+      ; centroid will be an empty list if it lies outside the bounds
+      ; of the current NetLogo world, as defined by our current GIS
+      ; coordinate transformation
+      if not empty? centroid
+      [ create-terrenos 1
+        [ set xcor item 0 centroid
+          set ycor item 1 centroid
+          set size 0
+          ;set label gis:property-value vector-feature "CNTRY_NAME"
+        ]
+      ]
+    ]
+  ]
+
+    ask patches with [pxcor >= -260 and pxcor <= -205 and pycor >= -300 and pycor <= 300] [
+  set pcolor cyan ]
+  ask patches with [pxcor >= -260 and pxcor <= -150 and pycor >= -300 and pycor <= 0] [
+  set pcolor cyan ]
+  ask patches with [pxcor >= -260 and pxcor <= -100 and pycor >= -300 and pycor <= -100] [
+  set pcolor cyan ]
   ask patches with [pxcor >= -205 and pxcor <= -150 and pycor >= 1 and pycor <= 40] [
   set pcolor brown ]
   ask patches with [pxcor >= -150 and pxcor <= -140 and pycor >= -30 and pycor <= 1] [
@@ -121,172 +86,57 @@ to desplegar-exclusion
   ask patches with [pxcor >= 140 and pxcor <= 290 and pycor >= -130 and pycor <= -80] [
   set pcolor brown ]
 
-  ;exclusion del mar
-  ask patches with [pxcor >= -260 and pxcor <= -205 and pycor >= -300 and pycor <= 300] [
-  set pcolor cyan ]
-  ask patches with [pxcor >= -260 and pxcor <= -150 and pycor >= -300 and pycor <= 0] [
-  set pcolor cyan ]
-  ask patches with [pxcor >= -260 and pxcor <= -100 and pycor >= -300 and pycor <= -100] [
-  set pcolor cyan ]
-end
+  ask patches with [pxcor >= 00 and pxcor <= 10 and pycor >= 50 and pycor <= 55] [
+  set pcolor red ]
 
-to desplegar-land-use
-  ;zonas industriales -> gris
-  ask patches with [pxcor >= -68 and pxcor <= -54 and pycor >= 154 and pycor <= 165][ set pcolor grey] ; ciudad industrial otay
-  ask patches with [pxcor >= -105 and pxcor <= -100 and pycor >= 82 and pycor <= 98] [ set pcolor grey] ; parque industrial pacifico
+  ask patches with [pxcor >= -100 and pxcor <= -77 and pycor >= 157 and pycor <= 166] [
+  set pcolor blue ]
+  ask patches with [pxcor >= -87 and pxcor <= -75 and pycor >= 155 and pycor <= 166] [
+  set pcolor blue ]
+  ask patches with [pxcor >= -74 and pxcor <= -65 and pycor >= 135 and pycor <= 146] [
+  set pcolor blue ]
+  ask patches with [pxcor >= -45 and pxcor <= -40 and pycor >= 125 and pycor <= 136] [
+  set pcolor blue ]
+  ask patches with [pxcor >= -95 and pxcor <= -90 and pycor >= 130 and pycor <= 138] [
+  set pcolor blue ]
+  ask patches with [pxcor >= -35 and pxcor <= -30 and pycor >= 126 and pycor <= 131] [
+  set pcolor blue ]
+  ask patches with [pxcor >= -120 and pxcor <= -115 and pycor >= 126 and pycor <= 131] [
+  set pcolor blue ]
 
-  ;zonas de area verde / parques -> verde obscuro
-  ask patches with [pxcor >= -132 and pxcor <= -123 and pycor >= 122 and pycor <= 132] [ set pcolor green - 2] ; club campestre
-  ask patches with [pxcor >= -74 and pxcor <= -70 and pycor >= 156 and pycor <= 165] [set pcolor green - 2] ; parque amistad
-  ask patches with [pxcor >= -57 and pxcor <= -45 and pycor >= 108 and pycor <= 116][ set pcolor green - 2] ; parque morelos
+  ask patches with [pxcor >= -150 and pxcor <= -140 and pycor >= 94 and pycor <= 95] [
+  set pcolor red ]
+  ask patches with [pxcor >= -155 and pxcor <= -154 and pycor >= 94 and pycor <= 95] [
+  set pcolor red ]
+    ask patches with [pxcor >= -155 and pxcor <= -154 and pycor >= 94 and pycor <= 95] [
+  set pcolor red ]
 
-  ask patches with [pxcor >= -66 and pxcor <= -60 and pycor >= 122 and pycor <= 130 ] [set pcolor magenta] ; Alamar
-
-  ;zonas de propiedad privada
-end
-
-to setup-patches
-  ask patches [set pcolor green]
-end
-
-to setup-turtles
-  let conteo-urbanas poblacion-total * porcentaje-urbana / 100 / poblacion-celula
-  let conteo-rurales poblacion-total * porcentaje-rural / 100 / poblacion-celula
-
-  let patches-urbanos patches with [pcolor = blue]
-  let patches-rurales patches with [pcolor = green]
-
-  setup-urbanas conteo-urbanas patches-urbanos
-  setup-rurales conteo-rurales patches-rurales
-
-  ask urbanas ; crear super celulas rojas obscuras que albergen entre 3 a 5 mil habitantes.
-  [
-    ask patch-here
-    [
-      ifelse count urbanas in-radius 7 >= 4 and count urbanas in-radius 7 <= 5
-      [
-        let poblacion-nueva (count urbanas in-radius 7 )
-        repeat poblacion-nueva ;por cada celula al rededor que sean entre 3 y 5 hacer
-        [
-          ask one-of urbanas in-radius 7 [die]
-        ]
-        sprout-urbanas 1 [set color red - 2 set poblacion (poblacion-celula * poblacion-nueva)]
-      ]
-      [
-        ifelse count urbanas in-radius 14 >= 6 and count urbanas in-radius 14 <= 10
-        [
-          let poblacion-nueva-super (count urbanas in-radius 14)
-          repeat poblacion-nueva-super
-          [
-            ask one-of urbanas in-radius 14 [die]
-          ]
-          sprout-urbanas 1 [set color red - 4 set poblacion (poblacion-celula * poblacion-nueva-super)]
-        ]
-        [
-
-        ]
-
-      ]
-
-    ]
-
-  ]
-end
-
-to setup-urbanas [conteo patches-urbs]
-    repeat int conteo [ ; por cada celula urbana
-  ask one-of patches-urbs
-    [
-      sprout-urbanas 1 [set color red set poblacion poblacion-celula]
-
-    ]
-  ]
-end
-
-to setup-rurales [conteo patches-rurs]
-  repeat int conteo ; por cada celula rural
-  [
-    ask one-of patches-rurs
-    [
-      sprout-rurales 1 [set color red set poblacion poblacion-celula]
-    ]
-  ]
-end
-
-;; Altitud negativa (canales) ;;
-to desplegar_altNegP
-
-  ask patches with [pxcor >= -143 and pxcor < -125 and pycor > 156 and pycor < 165] [set pcolor magenta ]
-  ask patches with [pxcor >= -134 and pxcor < -110 and pycor > 149 and pycor < 157] [set pcolor magenta ]
-  ask patches with [pxcor >= -124 and pxcor < -104 and pycor > 140 and pycor < 150] [set pcolor magenta ]
-  ask patches with [pxcor >= -112 and pxcor < -90 and pycor > 130 and pycor < 142] [set pcolor magenta ]
-  ask patches with [pxcor >= -82 and pxcor < -69 and pycor > 110 and pycor < 121] [set pcolor magenta ]
-  ask patches with [pxcor >= -74 and pxcor < -62 and pycor > 90 and pycor < 112] [set pcolor magenta ]
-  ask patches with [pxcor >= -63 and pxcor < -45 and pycor > 77 and pycor < 97] [set pcolor magenta ]
-  ask patches with [pxcor >= -96 and pxcor < -68 and pycor > 120 and pycor < 135] [set pcolor magenta ]
-  ask patches with [pxcor >= -69 and pxcor < -55 and pycor > 124 and pycor < 135] [set pcolor magenta ]
-  ask patches with [pxcor >= -96 and pxcor < -82 and pycor > 112 and pycor < 121] [set pcolor magenta ]
-  ask patches with [pxcor >= -57 and pxcor < -44 and pycor > 133 and pycor < 140] [set pcolor magenta ]
-  ask patches with [pxcor >= -45 and pxcor < -30 and pycor > 138 and pycor < 147] [set pcolor magenta ]
-   ask patches with [pxcor >= -62 and pxcor < -50 and pycor > 96 and pycor < 110] [set pcolor magenta ]
-
-
+  ask patches with [pxcor >= -195 and pxcor <= 112 and pycor >= 120 and pycor <= 124] [
+  set pcolor red ]
+  ask patches with [pxcor >= -200 and pxcor <= -196 and pycor >= 2 and pycor <= 165][
+  set pcolor red ]
+  ask patches with [pxcor >= 20 and pxcor <= 24 and pycor >= 2 and pycor <= 120][
+  set pcolor red ]
+    ask patches with [pxcor >= -89 and pxcor <= 23 and pycor >= 2 and pycor <= 6] [
+  set pcolor red ]
+     ask patches with [pxcor >= -175 and pxcor <= -170 and pycor >= 40 and pycor <= 70] [
+  set pcolor red ]
+      ask patches with [pxcor >= -175 and pxcor <= -135 and pycor >= 67 and pycor <= 70] [
+  set pcolor red ]
+        ask patches with [pxcor >= -140 and pxcor <= -135 and pycor >= 68 and pycor <= 95] [
+  set pcolor red ]
+         ask patches with [pxcor >= -140 and pxcor <= -115 and pycor >= 90 and pycor <= 95] [
+  set pcolor red ]
+         ask patches with [pxcor >= -119 and pxcor <= -115 and pycor >= 95 and pycor <= 155] [
+  set pcolor red ]
 
 end
 
-
-to desplegar_Elevadap
-
-  ask patches with [pxcor >= -138 and pxcor < -112 and pycor > 62 and pycor < 106] [set pcolor [241 217 57] ]
-  ask patches with [pxcor >= -46 and pxcor < -30 and pycor > 87 and pycor < 112] [set pcolor [241 217 57] ]
-  ask patches with [pxcor >= -51 and pxcor < -46 and pycor > 93 and pycor < 107] [set pcolor [241 217 57] ]
-  ask patches with [pxcor >= -112 and pxcor < -92 and pycor > 61 and pycor < 102] [set pcolor [241 217 57] ]
-
-end
-
-
-;; 161 metros hasta 250 metros ;;
-
-to desplegar_estandarp
-
-  ;;color [29 159 120]
-  ask patches with [pxcor >= -183 and pxcor < -152 and pycor > 110 and pycor < 153] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -152 and pxcor < -114 and pycor > 105 and pycor < 127] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -152 and pxcor < -130 and pycor > 125 and pycor < 140] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -114 and pxcor < -102 and pycor > 105 and pycor < 122] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -111 and pxcor < -98 and pycor > 100 and pycor < 118] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -103 and pxcor < -87 and pycor > 94 and pycor < 109] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -92 and pxcor < -77 and pycor > 60 and pycor < 97] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -79 and pxcor < -67 and pycor > 60 and pycor < 85] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -158 and pxcor < -138 and pycor > 100 and pycor < 112] [set pcolor [29 159 120] ]
-
-  ask patches with [pxcor >= -30 and pxcor < 15 and pycor > 91 and pycor < 118] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -25 and pxcor < 7 and pycor > 117 and pycor < 126] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= -30 and pxcor < -1 and pycor > 84 and pycor < 92] [set pcolor [29 159 120] ]
-  ask patches with [pxcor >= 15 and pxcor < 42 and pycor > 94 and pycor < 110] [set pcolor [29 159 120] ]
-
-end
-
-
-;;401 metros de altitud en adelante ;;
-
-to desplegar_muyElevadap
-
-
-  ask patches with [pxcor >= -40 and pxcor < -32 and pycor > 103 and pycor < 110] [set pcolor red ]
-  ask patches with [pxcor >= -45 and pxcor < -34 and pycor > 91 and pycor < 104] [set pcolor red ]
-end
-
-to desplegar
-  ask terrenos [ die ]
-  ask patches with [pxcor >= -260 and pxcor <= -205 and pycor >= -300 and pycor <= 300] [
-  set pcolor cyan
-  ]
-
-  gis:set-drawing-color white
-  gis:draw terreno-dataset 1
+to desplegar_calle
+   gis:set-drawing-color blue
+  gis:draw calle-dataset 1
   if label-terrenos
-  [ foreach gis:feature-list-of terreno-dataset [ [vector-feature] ->
+  [ foreach gis:feature-list-of calle-dataset [ [vector-feature] ->
       let centroid gis:location-of gis:centroid-of vector-feature
       ; centroid will be an empty list if it lies outside the bounds
       ; of the current NetLogo world, as defined by our current GIS
@@ -302,7 +152,6 @@ to desplegar
     ]
   ]
 end
-
 
 to desplegar_exclusion
    gis:set-drawing-color pink
@@ -326,127 +175,110 @@ to desplegar_exclusion
   ]
 end
 
-
 to go
+  move-testeo
+  cambio
+  move-turtles
+  eat-grass
+  reproduce
+  check-death
+  regrow-grass
+
   system-dynamics-go
-
-  set delta-poblacion tasa-natalidad anio-actual - tasa-mortalidad anio-actual + tasa-inmigracion anio-actual - tasa-emigracion anio-actual
-  set delta-poblacion delta-poblacion * poblacion-total / 1000
-  ;set delta-poblacion poblacion-total * 0.012
-  set anio-actual anio-actual + 1
-  set poblacion-total int poblacion-total + int delta-poblacion
-
-
-  ;primero procesar la generación anterior
-  crecer-urban
-
-  crecer-rural
-
-  let urbanas-alrededor 0
-  let urbanas-alrededor-sobrepobladas 0
-  ask urbanas with [color = red] [ ;para todas las urbanas
-    ask patch-here
-    [
-      set urbanas-alrededor count urbanas in-radius 7 with [color = red]  ; contar celulas en radio de 1 km2 = 7 patches.
-      ifelse urbanas-alrededor >= 4 and urbanas-alrededor <= 5 ; hacer celula grande = centro poblacional
-      [
-        repeat urbanas-alrededor ; por cada celula al rededor
-        [
-          ask one-of urbanas in-radius 7 with [color = red] [die] ; borrar las normales necesarias
-        ]
-        sprout-urbanas 1 [set color red - 2 set poblacion poblacion-celula * urbanas-alrededor] ; crea una celula grande
-      ]
-      [
-        set urbanas-alrededor-sobrepobladas count urbanas in-radius 7 with [color = red]
-        if urbanas-alrededor-sobrepobladas >= 6
-        [
-          ask urbanas in-radius 7 with [color = red] [die] ; borrar todas las normales
-        ]
-        sprout-urbanas 1 [set color red - 4 set poblacion poblacion-celula * urbanas-alrededor-sobrepobladas]
-      ]
-    ]
-  ]
-
-  ; producir una nueva generacion
-  producir-nueva-generacion delta-poblacion
-
+  ;ask turtles with [shape = "person"][forward 1]
+  ;ask turtles with [shape = "person"][if [pcolor] of patch-ahead 6 != black [set heading heading - 100]]
 
   tick
   wait .1
 end
 
-to crecer-urban
-  ask urbanas with [color = red - 2]; para celulas grandes
-  [
-    ask patches in-radius 7 with [pcolor = green] [set pcolor blue]
-  ]
+to setup-testeo
+  create-testeo 5000
+  ask testeo [setxy random-xcor random-ycor]
+end
 
-  ask urbanas with [color = red - 4]
-  [
-    ask patches  in-radius 14 with [pcolor = green][set pcolor blue]
+
+to move-testeo
+  ask testeo [
+    right random 90
+    forward 1]
+  tick
+end
+
+to cambio
+  ask testeo [
+   if pcolor = black [
+     set pcolor red]]
+   move-testeo
+end
+
+;;
+
+
+to eat-grass
+  ask turtles[
+    if pcolor = green [
+      set pcolor violet
+      set energy energy + 10
+    ]
+    ifelse energia
+    [set label energy]
+    [set label ""]
   ]
 end
 
-to crecer-rural
-  ask rurales
-  [
-    if count rurales in-radius 7 >= 3
-    [
-      ask patches in-radius 7 with [pcolor = green] [set pcolor blue]
+to move-turtles
+  ask turtles[
+    right random 360
+    forward 1
+    set energy energy - 1
+  ]
+end
+
+to setup-patches
+  ask patches [set pcolor green]
+end
+
+to setup-turtles
+  create-turtles 10
+  ask turtles[set shape "person" setxy random-xcor random-ycor]
+end
+
+to reproduce
+  ask turtles[
+    if energy > 50 [
+      set energy energy - 50
+      hatch 1 [ set energy 50 ]
     ]
   ]
 end
 
-to producir-nueva-generacion [delta-pob]
-  repeat delta-poblacion / 1000; celulas nuevas
-    [
-      ifelse random 100 < porcentaje-urbana; 96% de probablilidad de crear una urbana
-      [
-        ask one-of urbanas with [color = red] ; encuentra una urbana no sobrepoblada
-        [
-          ask one-of patches in-radius 14 with [pcolor = blue] ; busca algun patch urbano en 2 km2 y crear celula urbana
-          [
-            sprout-urbanas 1 [set color red set poblacion poblacion-celula]
-          ]
-        ]
-      ]
-      [
-        ask one-of rurales with [color = red]
-        [
-          ask one-of patches in-radius 7 with [pcolor = green or pcolor = blue] ; radio de crecimiento bajo
-          [
-            sprout-rurales 1 [set color red set poblacion poblacion-celula]
-          ]
-        ]
-      ]
-
-    ]
+to check-death
+  ask turtles [
+    if energy <= 0 [ die ]
+    if pcolor = brown [ die ]
+    if pcolor = blue [ die ]
+    if pcolor = cyan [ die ]
+    if pcolor = red [ die ]
+  ]
 end
 
+to regrow-grass
+  ;ask turtles with [shape = "person"][forward 1]
+  ;ask turtles with [shape = "person"][ifelse [pcolor] of patch-ahead 6 != orange
+    ;[set heading heading - 100]
+    ;[ask patches [if random 100 < 3 [ set pcolor green ]]]]
+  ;ask patches [if random 100 < 3 [ set pcolor green ]]
 
-;; funciones para obtención de tasas relacionadas al crecimiento.
-to-report tasa-natalidad [anio]
-  ifelse -0.32077 * anio + 664.12 > 0 [report -0.32077 * anio + 664.12] [report 0]
-
-end
-
-to-report tasa-mortalidad [anio]
-  report 0.07782 * anio - 152.18
-end
-
-to-report tasa-inmigracion [anio]
-  report 0.0000767 * anio + 0.1547
-end
-
-to-report tasa-emigracion [anio]
-  report 0.0000526 * anio + 0.1062
+  ask patches [ifelse pcolor = blue [ set pcolor brown ]
+    [if pcolor = violet [if random 100 < 5 [ set pcolor green ]] ] ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-497
-10
-1507
-1021
+658
+118
+1668
+1129
 -1
 -1
 2.0
@@ -467,13 +299,13 @@ GRAPHICS-WINDOW
 0
 1
 ticks
-60.0
+30.0
 
 BUTTON
-19
-118
-150
-151
+37
+221
+168
+254
 NIL
 setup\n
 NIL
@@ -487,20 +319,20 @@ NIL
 1
 
 CHOOSER
-19
-10
-152
-55
+37
+113
+170
+158
 mapa
 mapa
 "020040001A"
 0
 
 BUTTON
-18
-160
-150
-193
+36
+263
+168
+296
 display
 desplegar
 NIL
@@ -514,10 +346,10 @@ NIL
 1
 
 SWITCH
-19
-72
-151
-105
+37
+175
+169
+208
 label-terrenos
 label-terrenos
 0
@@ -525,10 +357,10 @@ label-terrenos
 -1000
 
 BUTTON
-19
-202
-149
-235
+37
+305
+167
+338
 NIL
 go
 T
@@ -541,157 +373,217 @@ NIL
 NIL
 1
 
-MONITOR
-164
-12
-331
-57
-Poblacion Total
-poblacion-total
-17
+BUTTON
+20
+604
+137
+637
+NIL
+desplegar_calle
+NIL
 1
-11
-
-MONITOR
-171
-319
-289
-364
-Inmigrantes
-round ((tasa-inmigracion anio-actual) * poblacion-total / 1000)
-17
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
 1
-11
 
-MONITOR
-173
-255
-288
-300
-Emigrantes
-round ((tasa-emigracion anio-actual) * poblacion-total / 1000)
-17
-1
-11
-
-MONITOR
-174
-189
-288
-234
-Fallecimientos
-round ((tasa-mortalidad anio-actual) * poblacion-total / 1000)
-17
-1
-11
-
-MONITOR
-168
-132
-292
-177
-Nacimientos
-round ((tasa-natalidad anio-actual) * poblacion-total / 1000)
-17
-1
-11
-
-MONITOR
+BUTTON
+34
+368
 166
-76
-291
-121
-Crecimiento Aproximado
-int delta-poblacion
+401
+NIL
+desplegar_exclusion
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+182
+115
+349
+160
+Poblacion Total
+poblacionTotal + 1641570
 17
 1
 11
 
 MONITOR
-325
-75
-406
-120
-año actual
-anio-actual
+295
+320
+413
+365
+Inmigrantes
+inmigrantes
+17
+1
+11
+
+MONITOR
+299
+379
+414
+424
+Migrantes
+migrantes
+17
+1
+11
+
+MONITOR
+300
+438
+414
+483
+Fallecimientos
+fallecimientos
+17
+1
+11
+
+TEXTBOX
+347
+14
+595
+121
+Tasas 2010-2015\n1, 641, 570 (49.7%)
+15
+0.0
+1
+
+MONITOR
+288
+254
+412
+299
+Nacimientos
+nacimientos
 17
 1
 11
 
 SLIDER
-300
-381
-475
-414
-tasa-fallecimientos
-tasa-fallecimientos
-0
-100
-100.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-301
-319
-477
-352
-tasa-fenomenosNaturales
-tasa-fenomenosNaturales
-0
-100
-100.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-303
-253
-475
-286
+444
+379
+616
+412
 tasa-migrantes
 tasa-migrantes
 0
 100
-100.0
+69.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-303
-197
-475
-230
-tasa-inmigrantes
-tasa-inmigrantes
-0
-100
-100.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-303
-139
-475
-172
+443
+263
+615
+296
 tasa-nacimientos
 tasa-nacimientos
 0.0
 100
-99.0
+100.0
 1.0
 1
 NIL
 HORIZONTAL
+
+SLIDER
+444
+323
+616
+356
+tasa-inmigrantes
+tasa-inmigrantes
+0
+100
+32.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+446
+433
+621
+466
+tasa-fallecimientos
+tasa-fallecimientos
+0
+100
+23.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+20
+527
+123
+560
+energia
+energia
+1
+1
+-1000
+
+MONITOR
+184
+179
+309
+224
+Crecimiento Aproximado
+count testeo - 5000
+17
+1
+11
+
+MONITOR
+137
+529
+194
+574
+green
+count patches with [pcolor = green]
+17
+1
+11
+
+TEXTBOX
+448
+198
+598
+258
+Utilice los controles deslizantes para insertar variables en caso de tenerlas
+12
+130.0
+0
+
+TEXTBOX
+17
+15
+417
+108
+Simulador de densidad de poblacion
+25
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1050,49 +942,39 @@ NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 1.0
-    org.nlogo.sdm.gui.AggregateDrawing 17
+    org.nlogo.sdm.gui.AggregateDrawing 13
         org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 428 134 60 40
-            org.nlogo.sdm.gui.WrappedStock "manchaUrbana" "manchaUrbana" 0
+            org.nlogo.sdm.gui.WrappedStock "poblacionTotal" "poblacionTotal" 0
         org.nlogo.sdm.gui.ReservoirFigure "attributes" "attributes" 1 "FillColor" "Color" 192 192 192 144 92 30 30
         org.nlogo.sdm.gui.RateConnection 3 174 109 295 128 416 147 NULL NULL 0 0 0
             org.jhotdraw.figures.ChopEllipseConnector REF 3
             org.jhotdraw.standard.ChopBoxConnector REF 1
-            org.nlogo.sdm.gui.WrappedRate "manchaUrbana + nacimientos - fallecimientos - migrantes + inmigrantes - fenomenosNaturales + poblacionTotal - restoVariable" "flujoUrbano"
+            org.nlogo.sdm.gui.WrappedRate "poblacionTotal + nacimientos - fallecimientos - migrantes + inmigrantes" "crecimientoPoblacional"
                 org.nlogo.sdm.gui.WrappedReservoir  REF 2 0
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 201 258 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-nacimientos" "nacimientos"
-        org.nlogo.sdm.gui.BindingConnection 2 233 265 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 346 13 50 50
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-nacimientos * poblacionInicial)/ 1000" "nacimientos"
+        org.nlogo.sdm.gui.BindingConnection 2 359 51 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 9
             org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 50 212 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-fallecimientos" "fallecimientos"
-        org.nlogo.sdm.gui.BindingConnection 2 91 228 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 328 274 50 50
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-fallecimientos * poblacionInicial) / 1000" "fallecimientos"
+        org.nlogo.sdm.gui.BindingConnection 2 346 280 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 14
             org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 31 79 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-migrantes" "migrantes"
-        org.nlogo.sdm.gui.BindingConnection 2 78 106 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 179 264 50 50
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-migrantes * poblacionInicial) / 1000" "migrantes"
+        org.nlogo.sdm.gui.BindingConnection 2 213 273 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 19
             org.nlogo.sdm.gui.ChopRateConnector REF 4
         org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 173 10 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-inmigrantes" "inmigrantes"
+            org.nlogo.sdm.gui.WrappedConverter "(tasa-inmigrantes * poblacionInicial) / 1000" "inmigrantes"
         org.nlogo.sdm.gui.BindingConnection 2 210 47 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 24
             org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 339 8 50 50
-            org.nlogo.sdm.gui.WrappedConverter "tasa-fenomenosNaturales" "fenomenosNaturales"
-        org.nlogo.sdm.gui.BindingConnection 2 353 47 295 128 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 45 118 50 50
+            org.nlogo.sdm.gui.WrappedConverter "1641570" "poblacionInicial"
+        org.nlogo.sdm.gui.BindingConnection 2 93 141 295 128 NULL NULL 0 0 0
             org.jhotdraw.contrib.ChopDiamondConnector REF 29
-            org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 345 264 50 50
-            org.nlogo.sdm.gui.WrappedConverter "1641570" "poblacionTotal"
-        org.nlogo.sdm.gui.ConverterFigure "attributes" "attributes" 1 "FillColor" "Color" 130 188 183 491 244 50 50
-            org.nlogo.sdm.gui.WrappedConverter "5000" "restoVariable"
-        org.nlogo.sdm.gui.BindingConnection 2 500 259 295 128 NULL NULL 0 0 0
-            org.jhotdraw.contrib.ChopDiamondConnector REF 36
-            org.nlogo.sdm.gui.ChopRateConnector REF 4
-        org.nlogo.sdm.gui.BindingConnection 2 362 271 295 128 NULL NULL 0 0 0
-            org.jhotdraw.contrib.ChopDiamondConnector REF 34
             org.nlogo.sdm.gui.ChopRateConnector REF 4
 @#$#@#$#@
 @#$#@#$#@
