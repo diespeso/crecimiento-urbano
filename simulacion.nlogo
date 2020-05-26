@@ -79,18 +79,6 @@ to desplegar-urban-patches
   and pycor <= 108 and pycor >= 74] [set pcolor blue]
 end
 
-to desplegar-urban
-  gis:set-drawing-color white
-  gis:draw perimetro-dataset 1
-
-  gis:set-drawing-color blue
-  gis:draw urban-dataset 1
-  gis:fill urban-dataset 1
-
-  desplegar-urban-patches
-  desplegar
-
-end
 
 to desplegar-exclusion-urban
   ask patches with [pxcor >= -100 and pxcor <= -77 and pycor >= 157 and pycor <= 166] [;aeropuerto
@@ -316,26 +304,6 @@ to desplegar
   ]
 end
 
-to desplegar_calle
-   gis:set-drawing-color blue
-  gis:draw calle-dataset 1
-  if label-terrenos
-  [ foreach gis:feature-list-of calle-dataset [ [vector-feature] ->
-      let centroid gis:location-of gis:centroid-of vector-feature
-      ; centroid will be an empty list if it lies outside the bounds
-      ; of the current NetLogo world, as defined by our current GIS
-      ; coordinate transformation
-      if not empty? centroid
-      [ create-terrenos 1
-        [ set xcor item 0 centroid
-          set ycor item 1 centroid
-          set size 0
-          ;set label gis:property-value vector-feature "CNTRY_NAME"
-        ]
-      ]
-    ]
-  ]
-end
 
 to desplegar_exclusion
    gis:set-drawing-color pink
@@ -574,23 +542,6 @@ NIL
 NIL
 1
 
-BUTTON
-20
-604
-137
-637
-NIL
-desplegar_calle
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 MONITOR
 164
 12
@@ -656,23 +607,6 @@ int delta-poblacion
 17
 1
 11
-
-BUTTON
-18
-290
-151
-323
-Desplegar Urban
-desplegar-urban
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
 
 MONITOR
 325
